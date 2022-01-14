@@ -1,0 +1,426 @@
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/HANKRBX/HankHUB/main/%5BHH%5D%20Hank%20HUB%20HankLib.lua", true))()
+local TabButtonIcon = {
+	"rbxassetid://3926305904", Vector2.new(964, 924), -- Local
+	"rbxassetid://3926307971", Vector2.new(964, 4), -- Tools
+	"rbxassetid://3926307971", Vector2.new(84, 44), -- Visual
+	"rbxassetid://3926305904", Vector2.new(138, 4), -- Teleport
+	"rbxassetid://3926305904", Vector2.new(644, 364), -- Misc
+	"rbxassetid://3926307971", Vector2.new(324, 124), -- Settings
+	"rbxassetid://3926305904", Vector2.new(564, 564), -- Credits
+}
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/HANKRBX/HankHUB/main/%5BHH%5D%20Hank%20HUB%20HankLib.lua", true))() -- Library Loadstring
+
+local Window = Library:Window("Water.com", "More Updates soon") -- Create a new Window and Main Title
+
+local NewTab = Window:Tab("Main", "rbxassetid://3926305904", Vector2.new(964, 924)) -- Create a Tab Button, Icon, Icon Offset
+
+NewTab:Section("Section Name") -- Create a Section (You must to create a Section first or else other functions aren't working)
+
+NewTab:Label("OP Window") -- Create a Label
+
+NewTab:Button( -- Create a Button
+	"Silent Lock", -- Name
+	function()
+		print("Button Pressed") -- Printed After Button Pressed
+		game.StarterGui:SetCore("SendNotification", {
+			Title = "Water.com ";
+			Text = "Water mode enable.";
+
+		})
+		local CC = game:GetService"Workspace".CurrentCamera
+		local Plr
+		local enabled = false
+		local accomidationfactor = 0.129145
+		local mouse = game.Players.LocalPlayer:GetMouse()
+		local placemarker = Instance.new("Part", game.Workspace)
+
+		function makemarker(Parent, Adornee, Color, Size, Size2)
+			local e = Instance.new("BillboardGui", Parent)
+			e.Name = "PP"
+			e.Adornee = Adornee
+			e.Size = UDim2.new(Size, Size2, Size, Size2)
+			e.AlwaysOnTop = true
+			local a = Instance.new("Frame", e)
+			a.Size = UDim2.new(1, 0, 1, 0)
+			a.BackgroundTransparency = 0
+			a.BackgroundColor3 = Color
+			local g = Instance.new("UICorner", a)
+			g.CornerRadius = UDim.new(50, 50)
+			return(e)
+		end
+
+
+		local data = game.Players:GetPlayers()
+		function noob(player)
+			local character
+			repeat wait() until player.Character
+			local handler = makemarker(guimain, player.Character:WaitForChild("HumanoidRootPart"), Color3.fromRGB(19, 255, 255), 0.3, 3)
+			handler.Name = player.Name
+			player.CharacterAdded:connect(function(Char) handler.Adornee = Char:WaitForChild("HumanoidRootPart") end)
+
+
+			spawn(function()
+				while wait() do
+					if player.Character then
+						TextLabel.Text = player.Name..tostring(player:WaitForChild("leaderstats").Wanted.Value).." | "..tostring(math.floor(player.Character:WaitForChild("Humanoid").Health))
+					end
+				end
+			end)
+		end
+
+		for i = 1, #data do
+			if data[i] ~= game.Players.LocalPlayer then
+				noob(data[i])
+			end
+		end
+
+		game.Players.PlayerAdded:connect(function(Player)
+			noob(Player)
+		end)
+
+		spawn(function()
+			placemarker.Anchored = true
+			placemarker.CanCollide = false
+			placemarker.Size = Vector3.new(7, 7, 7)
+			placemarker.Transparency = 1
+			makemarker(placemarker, placemarker, Color3.fromRGB(255, 81, 0), 0.40, 0)
+		end)    
+
+		local UserInputService = game:GetService"UserInputService"
+
+		UserInputService.InputBegan:Connect(function(input)
+			if input.KeyCode == Enum.KeyCode.Q then
+				enabled = true 
+				Plr = getClosestPlayerToCursor()
+				game.StarterGui:SetCore("SendNotification", {
+					Title = "Water mode mommy";
+					Text = "Target: "..tostring(Plr.Name);
+
+				})
+
+				guimain[Plr.Name].Frame.BackgroundColor3 = Color3.fromRGB(214, 155, 232)
+			end
+		end)
+
+		UserInputService.InputEnded:Connect(function(input)
+			if input.KeyCode == Enum.KeyCode.Q then
+				disable = true
+				guimain[Plr.Name].Frame.BackgroundColor3 = Color3.fromRGB(214, 155, 232)
+			end
+		end)
+
+		function getClosestPlayerToCursor()
+			local closestPlayer
+			local shortestDistance = math.huge
+
+			for i, v in pairs(game.Players:GetPlayers()) do
+				if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Humanoid") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+					local pos = CC:WorldToViewportPoint(v.Character.PrimaryPart.Position)
+					local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(mouse.X, mouse.Y)).magnitude
+					if magnitude < shortestDistance then
+						closestPlayer = v
+						shortestDistance = magnitude
+					end
+				end
+			end
+			return closestPlayer
+		end
+
+		game:GetService"RunService".Stepped:connect(function()
+			if enabled and Plr.Character and Plr.Character:FindFirstChild("HumanoidRootPart") then
+				placemarker.CFrame = CFrame.new(Plr.Character.HumanoidRootPart.Position+(Plr.Character.HumanoidRootPart.Velocity*accomidationfactor))
+			else
+				placemarker.CFrame = CFrame.new(0, 9999, 0)
+			end
+		end)
+
+		local mt = getrawmetatable(game)
+		local old = mt.__namecall
+		setreadonly(mt, false)
+		mt.__namecall = newcclosure(function(...)
+			local args = {...}
+			if enabled and getnamecallmethod() == "FireServer" and args[2] == "UpdateMousePos" then
+				args[3] = Plr.Character.HumanoidRootPart.Position+(Plr.Character.HumanoidRootPart.Velocity*accomidationfactor)
+				return old(unpack(args))
+			end
+			return old(...)
+		end)
+		end
+)
+
+NewTab:Toggle( -- Create a Toggle Button
+	"On/Of", -- Name
+	function(toggle) -- callback toggle
+		if toggle == true then -- When toggle on
+			print("Toggle On")
+		else -- When toggle off
+			print("Toggle Off")
+		end
+	end
+)
+
+NewTab:Slider( -- Create a Slider
+	"Prediction", -- Name
+	16, -- Minimal Value
+	500, -- Maximum Value
+	function(value) -- callback value	
+end)
+
+NewTab:TextBox( -- Create a TextBox
+	"TextBox", -- Name
+	function(text) -- callback text
+		print(text) -- Print TextBox Text
+	end
+)
+
+NewTab:Dropdown( -- Create a TextBox
+	"Part", -- Name
+	{"Head", "UpperTorso", "HumanoidRooPart", "LowerTorso"}, -- List
+	function(v) -- Create a Dropdown, and Add Button on List "{"Button1", "Button2", "Button3"}"
+		print(v) -- Print Dropdown List
+	end
+)
+
+NewTab:ColorPicker( -- Create a Color Picker
+	"ColorPicker", -- Name
+	Color3.fromRGB(25, 25, 25), -- Default Color
+	function(color) -- callback color
+		print(color)
+	end
+)
+
+local NewTab = Window:Tab("Misc", "rbxassetid://3926305904", Vector2.new(964, 924)) -- Create a Tab Button, Icon, Icon Offset
+
+NewTab:Section("Misc") -- Create a Section (You must to create a Section first or else other functions aren't working)
+
+NewTab:Label("Misc") -- Create a Label
+
+NewTab:Button( -- Create a Button
+	"CFrame", -- Name
+	function()
+		print("Button Pressed") -- Printed After Button Pressed
+		IsFirstPerson = false
+		ShiftHeld = false
+		WHeld = false
+		SHeld = false
+		AHeld = false
+		DHeld = false -- LMFAO
+		local gcheck = true
+		urspeed = 0.05 -- The lower it is the faster. So don't worry about it being minus 1
+
+
+		function ChangeFaster(inputObject, gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.N and gameProcessedEvent == false then        
+				urspeed = urspeed - 0.025
+			end
+		end
+
+
+
+		function ChangeSlower(inputObject, gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.M and gameProcessedEvent == false then        
+				urspeed = urspeed + 0.025
+			end
+		end
+
+
+
+		function GChecker(inputObject, gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.T and gameProcessedEvent == false then        
+				if gcheck == false then
+					gcheck = true
+				elseif gcheck == true then
+					gcheck = false
+				end
+
+			end
+		end
+
+		game:GetService("UserInputService").InputBegan:connect(GChecker)
+
+
+
+		function PressShift(inputObject,gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.LeftShift and gameProcessedEvent == false and gcheck == true then
+				ShiftHeld = true
+			end
+		end
+
+		function ReleaseShift(inputObject,gameProcessed)
+			if inputObject.KeyCode == Enum.KeyCode.q then
+				ShiftHeld = false
+			end
+		end
+
+
+		function PressW(inputObject,gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.W and gameProcessedEvent == false and gcheck == true then
+				WHeld = true
+			end
+		end
+
+		function ReleaseW(inputObject,gameProcessed)
+			if inputObject.KeyCode == Enum.KeyCode.W then
+				WHeld = false
+			end
+		end
+
+		function PressS(inputObject,gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.S and gameProcessedEvent == false and gcheck == true then
+				SHeld = true
+			end
+		end
+
+		function ReleaseS(inputObject,gameProcessed)
+			if inputObject.KeyCode == Enum.KeyCode.S then
+				SHeld = false
+			end
+		end
+
+
+		function PressA(inputObject,gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.A and gameProcessedEvent == false and gcheck == true then
+				AHeld = true
+			end
+		end
+
+		function ReleaseA(inputObject,gameProcessed)
+			if inputObject.KeyCode == Enum.KeyCode.A then
+				AHeld = false
+			end
+		end
+
+
+		function PressD(inputObject,gameProcessedEvent)
+			if inputObject.KeyCode == Enum.KeyCode.D and gameProcessedEvent == false and gcheck == true then
+				DHeld = true
+			end
+		end
+
+		function ReleaseD(inputObject,gameProcessed)
+			if inputObject.KeyCode == Enum.KeyCode.D then
+				DHeld = false
+			end
+		end
+
+		function CheckFirst(inputObject,gameProcessed)
+			if inputObject.KeyCode == Enum.UserInputType.MouseWheel then
+				if (player.Character.Head.CFrame.p - workspace.CurrentCamera.CFrame.p).magnitude < 0.6 then
+					IsFirstPerson = true
+				elseif (player.Character.Head.CFrame.p - workspace.CurrentCamera.CFrame.p).magnitude > 0.6 then
+					IsFirstPerson = false
+				end
+			end
+		end
+
+		game:GetService("UserInputService").InputBegan:connect(PressShift)
+		game:GetService("UserInputService").InputEnded:connect(ReleaseShift)
+
+		game:GetService("UserInputService").InputBegan:connect(PressW)
+		game:GetService("UserInputService").InputEnded:connect(ReleaseW)
+
+		game:GetService("UserInputService").InputBegan:connect(PressS)
+		game:GetService("UserInputService").InputEnded:connect(ReleaseS)
+
+		game:GetService("UserInputService").InputBegan:connect(PressA)
+		game:GetService("UserInputService").InputEnded:connect(ReleaseA)
+
+		game:GetService("UserInputService").InputBegan:connect(PressD)
+		game:GetService("UserInputService").InputEnded:connect(ReleaseD)
+
+		game:GetService("UserInputService").InputChanged:connect(CheckFirst)
+
+		game:GetService("UserInputService").InputBegan:connect(ChangeFaster)
+		game:GetService("UserInputService").InputBegan:connect(ChangeSlower)
+
+
+		game:GetService('RunService').Stepped:connect(function()
+			if ShiftHeld == true then
+
+				if WHeld == true then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,-urspeed)
+				end
+
+				if SHeld == true then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,0,urspeed)
+				end
+
+				if DHeld == true then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(urspeed,0,0)
+				end
+
+				if AHeld == true then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(-urspeed,0,0)
+				end
+
+
+			end
+		end)
+
+		repeat
+			wait()
+		until game:IsLoaded()
+		local gm = getrawmetatable(game)
+		setreadonly(gm, false)
+		local namecall = gm.__namecall
+		gm.__namecall =
+			newcclosure(
+				function(self, ...)
+					local args = {...}
+					if not checkcaller() and getnamecallmethod() == "FireServer" and tostring(self) == "MainEvent" then
+					if tostring(getcallingscript()) ~= "Framework" then
+						return
+					end
+				end
+					if not checkcaller() and getnamecallmethod() == "Kick" then
+					return
+				end
+					return namecall(self, unpack(args))
+				end
+			)
+	end
+)
+
+NewTab:Button( -- Create a Button
+	"Trash Talk J", -- Name
+	function()
+		print("Button Pressed") -- Printed After Button Pressed
+		local words = {
+			'sub to sixxyruin',
+			'seed',
+			'bro why is it so ez',
+			'man so ez',
+			'clown',
+			'sonned',
+			'that was ez',
+			'get better kid',
+			'Ls',
+		}
+
+		local player = game.Players.LocalPlayer
+		local keybind = 'j'
+
+		local event = game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest
+
+		player:GetMouse().KeyDown:connect(function(key)
+			if key == keybind then
+				event:FireServer(words[math.random(#words)], "All")
+			end
+		end)
+		--- this is a talk trash script
+	end
+)
+
+local NewTab = Window:Tab("Credits", "rbxassetid://3926305904", Vector2.new(964, 924)) -- Create a Tab Button, Icon, Icon Offset
+
+NewTab:Section("Credits") -- Create a Section (You must to create a Section first or else other functions aren't working)
+
+NewTab:Label("I dont know") -- Create a Label
+
+NewTab:Button( -- Create a Button
+	"Hank Hub", -- Name
+	function()
+		print("Button Pressed") -- Printed After Button Pressed
+	end
+)
